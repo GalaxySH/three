@@ -5,14 +5,14 @@ from cocos.collision_model import CollisionManagerGrid
 from cocos.scenes import FadeTransition, SplitColsTransition
 from cocos.text import Label
 from cocos.actions import Delay, CallFunc
-from scenario import get_scenario_1
+from scenario import get_scenario_2 as get_scenario  # change scenario here
 import actors as actors
 import mainmenu
 import random
 
 
 def new_game():
-    scenario = get_scenario_1()
+    scenario = get_scenario()
     background = scenario.get_background()
     hud = HUD()
     game_layer = GameLayer(hud, scenario)
@@ -126,7 +126,7 @@ class GameLayer(Layer):
         if random.random() < 0.005:
             self.create_enemy()
 
-    def on_mouse_press(self, x, y, buttons, mod):
+    def on_mouse_press(self, x, y, _buttons, _mod):
         # anything in this collision grid where the mouse
         # click happened?
         slots = self.collman_slots.objs_touching_point(x, y)
@@ -154,15 +154,14 @@ class GameLayer(Layer):
         super(GameLayer, self).remove(obj)
 
 
-
 class HUD(Layer):
     def __init__(self):
         super().__init__()
         # get dimensions of window
         w, h = director.get_window_size()
         # create labels for score and scrap
-        self.score_text = self._create_text(60, h - 40)
-        self.scrap_text = self._create_text(w - 60, h - 40)
+        self.score_text = self._create_text(60, h - 20)
+        self.scrap_text = self._create_text(w - 60, h - 20)
 
     def _create_text(self, x, y):
         text = Label(font_size=18, font_name="Oswald",
@@ -172,10 +171,10 @@ class HUD(Layer):
         return text
 
     def update_score(self, score):
-        self.score_text.element.text = "Score: {}".format(score)
+        self.score_text.element.text = "SCORE: {}".format(score)
 
     def update_scrap(self, scrap):
-        self.scrap_text.element.text = "Scrap: {}".format(scrap)
+        self.scrap_text.element.text = "METAL: {}".format(scrap)
 
 
 def game_over():

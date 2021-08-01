@@ -1,3 +1,4 @@
+from cocos.director import director
 from cocos.sprite import Sprite
 from cocos.euclid import Vector2
 from cocos.collision_model import CircleShape, AARectShape
@@ -138,10 +139,12 @@ class Bunker(Actor):
         self.max_health = 100
         self.health = self.max_health
 
-        # x, y, = director.get_window_size()
+        w, h = director.get_window_size()
 
-        self.health_bar = TankHealthLabel(self.max_health / 20, 1)
-        self.health_bar.position = (self.x, self.y - 20)
+        self.health_bar = TankHealthLabel(self.max_health / 5, 1, 18)
+        # health_pos = Vector2(300, 470)  # the desired position
+        health_pos = Vector2(w / 2, h - 10)  # the desired position
+        self.health_bar.position = health_pos - (self.x, self.y)  # adjusting desired position to be relative the bunker
         # game.add(self.health_bar)
         self.add(self.health_bar)
 
@@ -150,6 +153,7 @@ class Bunker(Actor):
         if isinstance(other, Enemy):
             # reduce health by 10
             self.health -= 10
+            self.health_bar.set_percent(self.health / self.max_health)
             # explode the Enemy object
             other.explode()
             # check for bunker death
