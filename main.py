@@ -3,9 +3,12 @@ from cocos.director import director
 from mainmenu import new_menu
 
 if __name__ == "__main__":
-    pyglet.resource.path.append('assets')
+    # make the assets directory known to Pyglet
+    pyglet.resource.path.append("assets")
     pyglet.resource.reindex()
-    pyglet.font.add_file('assets/Oswald-Regular.ttf')
 
-    director.init(caption='High Building Ousting')
+    # give Pyglet access to our custom font
+    pyglet.font.add_file("assets/Oswald-Regular.ttf")
+
+    director.init(caption="High Building Ousting")
     director.run(new_menu())
