@@ -91,11 +91,68 @@ class TankHealthLabel(Label):
         self.element.text = bars_display
 
 
-class HealthBar(Sprite):
-    def __init__(self, pos):
-        super().__init__('assets/health_bar.png', pos)
+# class HealthBar(Sprite):
+#     def __init__(self, pos):
+#         super().__init__('assets/health_bar.png', pos)
+#
+#         self.percent = 1.0
+#
+#     def set_percent(self, prc: float):
+#         self.percent = 1.0
 
-        self.percent = 1.0
 
-    def set_percent(self, prc: float):
-        self.percent = 1.0
+class Bunker(Actor):
+    def __init__(self, x, y):
+        super().__init__('bunker.png', x, y)
+        self.health = 100
+
+    def collide(self, other):
+        if isinstance(other, Enemy):
+            self.health -= 10
+            other.explode()
+            if self.health <= 0 and self.is_running:
+                self.kill()
+
+
+class Shoot(Sprite):
+    def __init__(self, pos, travel_path, enemy):
+        super().__init__('shoot.png', position=pos)
+        self.do(MoveBy(travel_path, 0.1) +
+                CallFunc(self.kill) +
+                CallFunc(enemy.hit))
+
+
+class TurretSlot:
+    def __init__(self, pos, side):
+        self.cshape = AARectShape(
+            Vector2(*pos),
+            side * 0.5,
+            side * 0.5
+        )
+
+
+class Turret(Actor):
+    def __init__(self, x, y):
+        super().__init__('turret.png', x, y)
+
+        self.add(Sprite('range.png', opacity=50, scale=5))
+
+        self.cshape.r = self.width * 5 / 2
+        self.target = None
+
+        self.period = 2.0
+        self.elapsed = 0.0
+        self.schedule(self._shoot)
+
+    def _shoot(self, dt):
+        if self.elapsed < self.period:
+            self.elapsed += dt
+        elif self.target is not None:
+            self.elapsed = 0.0
+            target_path = Vector2(
+                self.target.x - self.x,
+                self.target.y - self.y
+            )
+            pos = self.cshape.center + target_path.normalized() * 20
+            self.parent.add(Shoot(pos, target_path, self.target))  # slide 106
+
